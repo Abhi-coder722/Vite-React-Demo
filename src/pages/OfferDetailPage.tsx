@@ -7,10 +7,10 @@ import {
   Grid,
   Stack,
   Typography,
-} from '@mui/material';
-import { useLocation, useNavigate } from 'react-router-dom';
+} from "@mui/material";
+import { useLocation, useNavigate } from "react-router-dom";
 
-export type OfferStatus = 'available' | 'over' | 'removed';
+export type OfferStatus = "available" | "over" | "removed";
 
 export interface Offer {
   id: string;
@@ -32,11 +32,11 @@ interface LocationState {
 
 export default function OfferDetails() {
   const statusLabel: Record<OfferStatus, string> = {
-    available: 'Available',
-    over: 'Expired',
-    removed: 'Removed',
+    available: "Available",
+    over: "Expired",
+    removed: "Removed",
   };
-    const location = useLocation();
+  const location = useLocation();
   const navigate = useNavigate();
 
   const offer = (location.state as LocationState | null)?.offer;
@@ -46,9 +46,7 @@ export default function OfferDetails() {
       <Container sx={{ py: 4 }}>
         <Typography>Offer not found.</Typography>
 
-        <Button onClick={() => navigate("/")}>
-          Back to offers
-        </Button>
+        <Button onClick={() => navigate("/")}>Back to offers</Button>
       </Container>
     );
   }
@@ -60,16 +58,14 @@ export default function OfferDetails() {
         py: { xs: 4, md: 8 },
       }}
     >
-        <Button onClick={()=>navigate("/")}>
-            back
-        </Button>
+      <Button onClick={() => navigate("/")}>back</Button>
       {/* Header */}
       <Box sx={{ mb: 5 }}>
         <Stack
           direction="row"
           spacing={1}
           sx={{
-            alignItems: 'center',
+            alignItems: "center",
             mb: 2,
           }}
         >
@@ -80,19 +76,11 @@ export default function OfferDetails() {
           />
 
           {offer.featured && (
-            <Chip
-              label="Featured"
-              size="small"
-              color="primary"
-            />
+            <Chip label="Featured" size="small" color="primary" />
           )}
         </Stack>
 
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          sx={{ mb: 0.5 }}
-        >
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
           {offer.provider}
         </Typography>
 
@@ -101,17 +89,13 @@ export default function OfferDetails() {
           component="h1"
           sx={{
             fontWeight: 600,
-            letterSpacing: '-0.02em',
+            letterSpacing: "-0.02em",
           }}
         >
           {offer.product}
         </Typography>
 
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          sx={{ mt: 1 }}
-        >
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
           {offer.category}
         </Typography>
       </Box>
@@ -120,11 +104,7 @@ export default function OfferDetails() {
 
       {/* Price */}
       <Box sx={{ py: 4 }}>
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          sx={{ mb: 0.5 }}
-        >
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
           Monthly price
         </Typography>
 
@@ -132,63 +112,46 @@ export default function OfferDetails() {
           direction="row"
           spacing={0.75}
           sx={{
-            alignItems: 'baseline',
+            alignItems: "baseline",
           }}
         >
           <Typography
             variant="h3"
             sx={{
               fontWeight: 600,
-              letterSpacing: '-0.03em',
+              letterSpacing: "-0.03em",
             }}
           >
             ${offer.monthlyPrice.toFixed(2)}
           </Typography>
 
-          <Typography color="text.secondary">
-            / month
-          </Typography>
+          <Typography color="text.secondary">/ month</Typography>
         </Stack>
       </Box>
 
       <Divider />
 
       {/* Details */}
-      <Grid
-        container
-        spacing={{ xs: 3, sm: 4 }}
-        sx={{ py: 4 }}
-      >
+      <Grid container spacing={{ xs: 3, sm: 4 }} sx={{ py: 4 }}>
         <Grid size={{ xs: 6, sm: 3 }}>
-          <Detail
-            label="Speed"
-            value={`${offer.speedMbps} Mbps`}
-          />
+          <Detail label="Speed" value={`${offer.speedMbps} Mbps`} />
         </Grid>
 
         <Grid size={{ xs: 6, sm: 3 }}>
-          <Detail
-            label="Contract"
-            value={`${offer.contractMonths} months`}
-          />
+          <Detail label="Contract" value={`${offer.contractMonths} months`} />
         </Grid>
 
         <Grid size={{ xs: 6, sm: 3 }}>
           <Detail
             label="Setup fee"
             value={
-              offer.setupFee === 0
-                ? 'Free'
-                : `$${offer.setupFee.toFixed(2)}`
+              offer.setupFee === 0 ? "Free" : `$${offer.setupFee.toFixed(2)}`
             }
           />
         </Grid>
 
         <Grid size={{ xs: 6, sm: 3 }}>
-          <Detail
-            label="Rating"
-            value={`${offer.rating.toFixed(1)} / 5`}
-          />
+          <Detail label="Rating" value={`${offer.rating.toFixed(1)} / 5`} />
         </Grid>
       </Grid>
 
@@ -196,24 +159,21 @@ export default function OfferDetails() {
 
       {/* Reference */}
       <Stack
-        direction={{ xs: 'column', sm: 'row' }}
+        direction={{ xs: "column", sm: "row" }}
         spacing={1}
         sx={{
           py: 3,
-          justifyContent: 'space-between',
+          justifyContent: "space-between",
         }}
       >
-        <Typography
-          variant="body2"
-          color="text.secondary"
-        >
+        <Typography variant="body2" color="text.secondary">
           Offer ID
         </Typography>
 
         <Typography
           variant="body2"
           sx={{
-            fontFamily: 'monospace',
+            fontFamily: "monospace",
           }}
         >
           {offer.id}
@@ -221,7 +181,7 @@ export default function OfferDetails() {
       </Stack>
 
       {/* Action */}
-      {offer.status === 'available' && (
+      {offer.status === "available" && (
         <Button
           variant="contained"
           fullWidth
@@ -229,7 +189,7 @@ export default function OfferDetails() {
           sx={{
             mt: 2,
             py: 1.25,
-            textTransform: 'none',
+            textTransform: "none",
           }}
         >
           Continue
@@ -247,11 +207,7 @@ interface DetailProps {
 function Detail({ label, value }: DetailProps) {
   return (
     <Box>
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        sx={{ mb: 0.5 }}
-      >
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
         {label}
       </Typography>
 

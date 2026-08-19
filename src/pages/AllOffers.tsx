@@ -129,10 +129,10 @@ export function AllOffers() {
   };
   const navigate = useNavigate();
   const handleDetails = (offer: Offer) => {
-  navigate(`/details/${offer.id}`, {
-    state: { offer },
-  });
-};
+    navigate(`/details/${offer.id}`, {
+      state: { offer },
+    });
+  };
 
   return (
     <>
@@ -209,7 +209,11 @@ export function AllOffers() {
 
             <TableBody>
               {paginatedOffers.map((offer) => (
-                <TableRow hover key={offer.id} onClick={()=>handleDetails(offer)}>
+                <TableRow
+                  hover
+                  key={offer.id}
+                  onClick={() => handleDetails(offer)}
+                >
                   <TableCell>
                     <Typography sx={{ fontWeight: 600 }}>
                       {offer.provider}
@@ -248,8 +252,8 @@ export function AllOffers() {
                     <Switch
                       size="small"
                       checked={offer.featured}
-                        onClick={(e) => e.stopPropagation()}
-  onChange={() => updateFeatured.mutate(offer)}
+                      onClick={(e) => e.stopPropagation()}
+                      onChange={() => updateFeatured.mutate(offer)}
                     />
                   </TableCell>
 
