@@ -7,7 +7,6 @@ import {
   InputAdornment,
   InputLabel,
   MenuItem,
-  Modal,
   Paper,
   Select,
   Snackbar,
@@ -25,17 +24,13 @@ import {
 } from "@mui/material";
 import {
   useCreateOffer,
-  useEditOffer,
-  useOffers,
+  useServerOffers,
   useUpdateFeatured,
 } from "../api/rest/useOffers";
-import { useMemo, useState } from "react";
-import { Edit, Search } from "@mui/icons-material";
+import { useState } from "react";
+import { MoreVert, Search } from "@mui/icons-material";
 import { AddOfferModal } from "../components/ModalForm";
 import type { Offer } from "../api/types/offers";
-import { EditOfferModal } from "../components/EditModalForm";
-import OfferDetails from "./OfferDetailPage";
-import { useNavigate } from "react-router-dom";
 
 type Sort = "price-asc" | "price-desc";
 
@@ -49,9 +44,14 @@ export function AllOffers() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const createOffer = useCreateOffer();
-  const editOffer = useEditOffer();
-  const [isEditModalOpen, setEditModalOpen] = useState<Offer>();
-  const { data: offers = [] } = useOffers();
+  const { data: offersResponse } = useServerOffers({
+    search,
+    sort,
+    page,
+    rowsPerPage,
+  });
+  const offers = offersResponse?.data ?? [];
+  const offerCount = offersResponse?.items ?? 0;
 
   const handleSearchChange = (value: string) => {
     setSearch(value);
@@ -62,44 +62,6 @@ export function AllOffers() {
     setSort(value);
     setPage(0);
   };
-
-  const filteredOffers = useMemo(() => {
-    const query = search.trim().toLowerCase();
-
-    if (!query) {
-      return offers;
-    }
-
-    return offers.filter(
-      (offer) =>
-        offer.provider.toLowerCase().includes(query) ||
-        offer.product.toLowerCase().includes(query),
-    );
-  }, [offers, search]);
-
-  const sortedOffers = useMemo(() => {
-    if (!sort) {
-      return filteredOffers;
-    }
-
-    const offersToSort = [...filteredOffers];
-
-    if (sort === "price-asc") {
-      return offersToSort.sort(
-        (a, b) => (a.monthlyPrice ?? 0) - (b.monthlyPrice ?? 0),
-      );
-    }
-
-    return offersToSort.sort(
-      (a, b) => (b.monthlyPrice ?? 0) - (a.monthlyPrice ?? 0),
-    );
-  }, [filteredOffers, sort]);
-
-  const paginatedOffers = useMemo(() => {
-    const start = page * rowsPerPage;
-
-    return sortedOffers.slice(start, start + rowsPerPage);
-  }, [page, rowsPerPage, sortedOffers]);
 
   const handleSubmit = (data: Offer) => {
     createOffer.mutate(data, {
@@ -112,27 +74,11 @@ export function AllOffers() {
       },
     });
   };
+
   const handleClose = () => {
     setIsSnackBarOpen(false);
     setIsSuccessSnackBarOpen(false);
   };
-  const handleEditSubmit = (data: Offer) => {
-    editOffer.mutate(data, {
-      onSuccess: () => {
-        setEditModalOpen(undefined);
-        setIsSuccessSnackBarOpen(true);
-      },
-      onError: () => {
-        setIsSnackBarOpen(true);
-      },
-    });
-  };
-  const navigate = useNavigate();
-  const handleDetails = (offer: Offer) => {
-  navigate(`/details/${offer.id}`, {
-    state: { offer },
-  });
-};
 
   return (
     <>
@@ -208,8 +154,8 @@ export function AllOffers() {
             </TableHead>
 
             <TableBody>
-              {paginatedOffers.map((offer) => (
-                <TableRow hover key={offer.id} onClick={()=>handleDetails(offer)}>
+              {offers.map((offer) => (
+                <TableRow hover key={offer.id} onClick={() => {}}>
                   <TableCell>
                     <Typography sx={{ fontWeight: 600 }}>
                       {offer.provider}
@@ -248,14 +194,13 @@ export function AllOffers() {
                     <Switch
                       size="small"
                       checked={offer.featured}
-                        onClick={(e) => e.stopPropagation()}
-  onChange={() => updateFeatured.mutate(offer)}
+                      onChange={() => updateFeatured.mutate(offer)}
                     />
                   </TableCell>
 
                   <TableCell align="right">
-                    <IconButton onClick={() => setEditModalOpen(offer)}>
-                      <Edit />
+                    <IconButton>
+                      <MoreVert />
                     </IconButton>
                   </TableCell>
                 </TableRow>
@@ -268,7 +213,7 @@ export function AllOffers() {
 
         <TablePagination
           component="div"
-          count={sortedOffers.length}
+          count={offerCount}
           page={page}
           onPageChange={(_, newPage) => {
             setPage(newPage);
@@ -286,14 +231,6 @@ export function AllOffers() {
         onClose={() => setOpen(false)}
         onSubmit={handleSubmit}
       />
-      {!!isEditModalOpen && (
-        <EditOfferModal
-          offer={isEditModalOpen!}
-          open={!!isEditModalOpen}
-          onClose={() => setEditModalOpen(undefined)}
-          onSubmit={handleEditSubmit}
-        />
-      )}
     </>
   );
 }

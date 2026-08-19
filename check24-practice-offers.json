@@ -3,12 +3,12 @@
     {
       "id": "off-1001",
       "provider": "NordStern",
-      "product": "DSL 100",
+      "product": "DSL 1001",
       "category": "dsl",
       "monthlyPrice": 29.99,
-      "setupFee": 49.99,
+      "setupFee": 49.88,
       "speedMbps": 100,
-      "rating": 4.6,
+      "rating": 4.7,
       "contractMonths": 24,
       "status": "available",
       "featured": false

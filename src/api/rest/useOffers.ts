@@ -5,6 +5,19 @@ import { fetchClient } from "../fetchClient";
 type OffersResponse = Offer[];
 type OfferResponse = Offer;
 type UpdateFeaturedRequest = Pick<Offer, "featured">;
+type OfferSort = "price-asc" | "price-desc";
+
+interface ServerOffersResponse {
+  items: number;
+  data: Offer[];
+}
+
+interface ServerOffersParams {
+  search: string;
+  sort?: OfferSort;
+  page: number;
+  rowsPerPage: number;
+}
 
 const offerKeys = {
   all: ["properties"] as const,
@@ -84,6 +97,40 @@ export function useSearchOffers({
   });
 }
 
+export function useServerOffers({
+  search,
+  sort,
+  page,
+  rowsPerPage,
+}: ServerOffersParams) {
+  const query = search.trim();
+  const sortParam =
+    sort === "price-asc"
+      ? "monthlyPrice"
+      : sort === "price-desc"
+        ? "-monthlyPrice"
+        : undefined;
+
+  return useQuery({
+    queryKey: [
+      ...offerKeys.all,
+      "server",
+      { search: query, sort, page, rowsPerPage },
+    ],
+    queryFn: () =>
+      fetchClient.GET<ServerOffersResponse>("/offers", {
+        params: {
+          query: {
+            _page: page + 1,
+            _per_page: rowsPerPage,
+            _sort: sortParam,
+            provider: query || undefined,
+          },
+        },
+      }),
+  });
+}
+
 export function useCreateOffer() {
   const queryClient = useQueryClient();
 
@@ -97,6 +144,29 @@ export function useCreateOffer() {
       queryClient.invalidateQueries({
         queryKey: offerKeys.all,
       });
+    },
+  });
+}
+
+export function useEditOffer() {
+  const queryClient = useQueryClient();
+
+  // PATCH /properties/:id flips favorite while leaving all other fields untouched.
+  const updateFeatured = (offer: Offer) =>
+    fetchClient.PATCH<OfferResponse, UpdateFeaturedRequest>("/offers/:id", {
+      params: {
+        path: { id: offer.id },
+      },
+      body: offer,
+    });
+
+  return useMutation({
+    mutationFn: updateFeatured,
+    onSuccess: (offer) => {
+      queryClient.invalidateQueries({
+        queryKey: offerKeys.all,
+      });
+      queryClient.setQueryData(offerKeys.detail(String(offer.id)), offer);
     },
   });
 }
