@@ -71,3 +71,21 @@ export default defineConfig([
   },
 ]);
 ```
+
+Structure
+
+db.json
+   ↑
+json-server
+   ↑
+REST API
+   ↑
+API functions
+   ↑
+TanStack Query
+   ↑
+React Components
+   ↑
+MUI
+   ↑
+User
